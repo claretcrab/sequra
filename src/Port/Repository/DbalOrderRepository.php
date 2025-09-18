@@ -41,6 +41,20 @@ class DbalOrderRepository implements OrderRepository
         $qb->executeStatement();
     }
 
+    public function update(Order $order): void
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->update('orders')
+            ->set('disbursement_status', ':disbursement_status')
+            ->set('disbursement_id', ':disbursement_id')
+            ->where('id = :id')
+            ->setParameter('disbursement_status', $order->disbursementStatus()->value)
+            ->setParameter('disbursement_id', $order->disbursementId())
+            ->setParameter('id', $order->id());
+        $qb->executeStatement();
+    }
+
     public function findById(string $id): ?Order
     {
         $qb = $this->connection->createQueryBuilder();

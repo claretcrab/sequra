@@ -4,6 +4,7 @@ namespace App\Port\Cli;
 
 use App\Domain\Disbursement;
 use App\Domain\DisbursementFrequency;
+use App\Domain\DisbursementRepository;
 use App\Domain\DisbursementStatus;
 use App\Domain\MerchantRepository;
 use App\Domain\OrderRepository;
@@ -18,6 +19,7 @@ class CalculateDisbursementsCommand extends Command
     public function __construct(
         private readonly OrderRepository    $orderRepository,
         private readonly MerchantRepository $merchantRepository,
+        private readonly DisbursementRepository $disbursementRepository,
     )
     {
         parent::__construct();
@@ -53,7 +55,7 @@ class CalculateDisbursementsCommand extends Command
                     foreach ($ordersGroup as $order) {
                         $order->setDisbursementStatus(DisbursementStatus::DISBURSED);
                         $order->setDisbursementId($disbursementId);
-                        $this->orderRepository->save($order);
+                        $this->orderRepository->update($order);
                         $totalAmount += $order->amount();
                         if ($totalAmount < 5000) {
                             $fee = (int)round($order->amount() * 0.01);
@@ -69,6 +71,7 @@ class CalculateDisbursementsCommand extends Command
                         amount: $totalAmount,
                         fee: $totalFee,
                     );
+                    $this->disbursementRepository->save($disbursement);
                     $output->writeln(
                         sprintf(
                             'Disbursed %d orders for merchant %s on %s',
@@ -77,6 +80,7 @@ class CalculateDisbursementsCommand extends Command
                             $date,
                         ),
                     );
+                    exit;
 //                } elseif ($merchant->disbursementFrequency() === DisbursementFrequency::WEEKLY) {
 //                    $dayOfWeek = (new \DateTime($date))->format('N');
 //                    if ($dayOfWeek == 7) { // Sunday

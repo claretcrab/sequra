@@ -45,4 +45,14 @@ class Order
     {
         return $this->disbursementId;
     }
+
+    public function setDisbursementStatus(DisbursementStatus $status): void
+    {
+        $this->disbursementStatus = $status;
+    }
+
+    public function setDisbursementId(Uuid $disbursementId): void
+    {
+        $this->disbursementId = $disbursementId;
+    }
 }
