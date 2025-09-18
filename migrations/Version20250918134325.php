@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250918115547 extends AbstractMigration
+final class Version20250918134325 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,19 +20,18 @@ final class Version20250918115547 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $sql = <<<'SQL'
-CREATE TYPE disbursement_frequency AS ENUM('DAILY', 'WEEKLY');
+CREATE TYPE disbursement_status AS ENUM('PENDING', 'DISBURSED');
 SQL;
 
         $this->addSql($sql);
 
         $sql = <<<'SQL'
-CREATE TABLE merchants (
-    id CHAR(36) NOT NULL PRIMARY KEY, -- UUID stored as a string
-    reference VARCHAR(255) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    live_on DATE NOT NULL,
-    disbursement_frequency disbursement_frequency NOT NULL,
-    minimum_monthly_fee INT NOT NULL
+CREATE TABLE orders (
+    id CHAR(12) NOT NULL PRIMARY KEY,
+    merchant_reference VARCHAR(255) NOT NULL,
+    amount INT NOT NULL,
+    created_at DATE NOT NULL,
+    disbursement_status disbursement_status NOT NULL
 );
 SQL;
 
@@ -42,12 +41,12 @@ SQL;
     public function down(Schema $schema): void
     {
         $sql = <<<'SQL'
-DROP TABLE merchants;
+DROP TABLE orders;
 SQL;
         $this->addSql($sql);
 
         $sql = <<<'SQL'
-DROP TYPE disbursement_frequency;
+DROP TYPE disbursement_status;
 SQL;
         $this->addSql($sql);
     }
