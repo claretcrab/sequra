@@ -31,27 +31,15 @@ class DbalOrderRepository implements OrderRepository
                 'created_at' => ':created_at',
                 'disbursement_status' => ':disbursement_status',
                 'disbursement_id' => ':disbursement_id',
+                'fee' => ':fee',
             ])
             ->setParameter('id', $order->id())
             ->setParameter('merchant_reference', $order->merchantReference())
             ->setParameter('amount', $order->amount())
             ->setParameter('created_at', $order->createdAt()->format('Y-m-d'))
             ->setParameter('disbursement_status', $order->disbursementStatus()->value)
-            ->setParameter('disbursement_id', $order->disbursementId());
-        $qb->executeStatement();
-    }
-
-    public function update(Order $order): void
-    {
-        $qb = $this->connection->createQueryBuilder();
-        $qb
-            ->update('orders')
-            ->set('disbursement_status', ':disbursement_status')
-            ->set('disbursement_id', ':disbursement_id')
-            ->where('id = :id')
-            ->setParameter('disbursement_status', $order->disbursementStatus()->value)
             ->setParameter('disbursement_id', $order->disbursementId())
-            ->setParameter('id', $order->id());
+            ->setParameter('fee', $order->fee());
         $qb->executeStatement();
     }
 
@@ -97,12 +85,13 @@ class DbalOrderRepository implements OrderRepository
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
-            ->select('*')
+            ->select('created_at, SUM(amount) as total_amount, SUM(fee) as total_fee')
             ->from('orders')
             ->where('disbursement_status = :status')
             ->andWhere('merchant_reference = :merchant_reference')
             ->setParameter('status', DisbursementStatus::PENDING->value)
             ->setParameter('merchant_reference', $merchantReference)
+            ->groupBy('created_at')
             ->orderBy('created_at', 'ASC');
 
         $results = $qb->executeQuery()->fetchAllAssociative();
@@ -120,6 +109,26 @@ class DbalOrderRepository implements OrderRepository
         }
 
         return $orders;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function markOrdersAsDisbursed(string $merchantReference, string $date, Uuid $disbursementId): void
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->update('orders')
+            ->set('disbursement_status', ':status')
+            ->set('disbursement_id', ':disbursement_id')
+            ->where('merchant_reference = :merchant_reference')
+            ->andWhere('created_at = :date')
+            ->setParameter('status', DisbursementStatus::DISBURSED->value)
+            ->setParameter('disbursement_id', $disbursementId->toString())
+            ->setParameter('merchant_reference', $merchantReference)
+            ->setParameter('date', $date);
+
+        $qb->executeStatement();
     }
 
 }

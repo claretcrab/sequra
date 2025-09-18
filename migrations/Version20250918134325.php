@@ -31,7 +31,8 @@ CREATE TABLE orders (
     merchant_reference VARCHAR(255) NOT NULL,
     amount INT NOT NULL,
     created_at DATE NOT NULL,
-    disbursement_status disbursement_status NOT NULL
+    disbursement_status disbursement_status NOT NULL,
+    fee INT NOT NULL
 );
 SQL;
 

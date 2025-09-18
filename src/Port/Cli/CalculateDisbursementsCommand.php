@@ -37,49 +37,27 @@ class CalculateDisbursementsCommand extends Command
                 continue;
             }
 
-            $orders = $this->orderRepository->findOrdersWithoutDisbursementByMerchant(
+            $ordersAggregate = $this->orderRepository->findOrdersWithoutDisbursementByMerchant(
                 merchantReference: $merchantReference,
             );
 
-            $ordersToDisburse = [];
-            foreach ($orders as $order) {
-                $ordersToDisburse[$order->createdAt()->format('Y-m-d')][] = $order;
-            }
-
-            foreach ($ordersToDisburse as $date => $ordersGroup) {
+            foreach ($ordersAggregate as $orderAggregate) {
                 if ($merchant->disbursementFrequency() === DisbursementFrequency::DAILY) {
                     $disbursementId = Uuid::v7();
 
-                    $totalAmount = 0;
-                    $totalFee = 0;
-                    foreach ($ordersGroup as $order) {
-                        $order->setDisbursementStatus(DisbursementStatus::DISBURSED);
-                        $order->setDisbursementId($disbursementId);
-                        $this->orderRepository->update($order);
-                        $totalAmount += $order->amount();
-                        if ($totalAmount < 5000) {
-                            $fee = (int)round($order->amount() * 0.01);
-                        } elseif ($totalAmount <= 30000) {
-                            $fee = (int)round($order->amount() * 0.0095);
-                        } else {
-                            $fee = (int)round($order->amount() * 0.0085);
-                        }
-                        $totalFee += $fee;
-                    }
                     $disbursement = new Disbursement(
                         id: $disbursementId,
-                        amount: $totalAmount,
-                        fee: $totalFee,
+                        amount: $orderAggregate['total_amount'],
+                        fee: $orderAggregate['total_fee'],
                     );
                     $this->disbursementRepository->save($disbursement);
-                    $output->writeln(
-                        sprintf(
-                            'Disbursed %d orders for merchant %s on %s',
-                            count($ordersGroup),
-                            $merchantReference,
-                            $date,
-                        ),
+
+                    $this->orderRepository->markOrdersAsDisbursed(
+                        merchantReference: $merchantReference,
+                        date: $orderAggregate['date'],
+                        disbursementId: $disbursementId,
                     );
+
                     exit;
 //                } elseif ($merchant->disbursementFrequency() === DisbursementFrequency::WEEKLY) {
 //                    $dayOfWeek = (new \DateTime($date))->format('N');

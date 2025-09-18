@@ -45,7 +45,7 @@ class DbalOrderRepositoryTest extends KernelTestCase
 
     public function testSaveAndFind(): void
     {
-        $merchant = new Order(
+        $order = new Order(
             id: '056d024481a9',
             merchantReference: 'treutel_schumm_fadel',
             amount: 6174,
@@ -53,7 +53,7 @@ class DbalOrderRepositoryTest extends KernelTestCase
             disbursementStatus: DisbursementStatus::PENDING,
         );
 
-        $this->repository->save($merchant);
+        $this->repository->save($order);
 
         $fetchedOrder = $this->repository->findById('056d024481a9');
         $this->assertNotNull($fetchedOrder);
