@@ -7,3 +7,4 @@ bin/console doctrine:migrations:migrate --env=test
 bin/phpunit
 
 bin/console app:import-merchants
+bin/console app:import-orders (as pending)

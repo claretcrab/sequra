@@ -2,25 +2,25 @@
 
 namespace App\Port\Cli;
 
-use App\Domain\DisbursementFrequency;
-use App\Domain\Merchant;
-use App\Domain\MerchantRepository;
+use App\Domain\Order;
+use App\Domain\OrderRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Uid\Uuid;
 
 #[AsCommand(name: 'app:import-orders')]
 class ImportOrdersCommand extends Command
 {
     public function __construct(
-        private readonly MerchantRepository $merchantRepository,
+        private readonly OrderRepository $orderRepository,
     ) {
         parent::__construct();
     }
 
     public function __invoke(OutputInterface $output): int
     {
+        set_time_limit(0);
+
         $filePath = 'csv/orders.csv';
 
         if (!file_exists($filePath)) {
@@ -28,36 +28,49 @@ class ImportOrdersCommand extends Command
             return Command::FAILURE;
         }
 
+
+        $row = 0;
+        foreach ($this->readCsv($filePath) as $data) {
+            try {
+                $order = new Order(
+                    id: $data[0],
+                    merchantReference: $data[1],
+                    amount: (int)$data[2] * 100, // Convert to cents,
+                    createdAt: new \DateTimeImmutable($data[3]),
+                );
+
+                $this->orderRepository->save($order);
+                unset($order);
+                $output->writeln('<info>Imported order: ' . $data[1] . '</info>');
+                unset($data);
+                $row++;
+                if($row % 100 === 0) {
+                    var_dump("Processed $row orders");
+                    gc_collect_cycles();
+                }
+            } catch (\Exception $e) {
+                $output->writeln('<error>Failed to import order: ' . $e->getMessage() . '</error>');
+            }
+        }
+
+        $output->writeln('<info>All orders have been imported.</info>');
+        return Command::SUCCESS;
+    }
+
+    private function readCsv(string $filePath): \Generator
+    {
         $file = fopen($filePath, 'r');
         if ($file === false) {
-            $output->writeln('<error>Failed to open CSV file: ' . $filePath . '</error>');
-            return Command::FAILURE;
+            throw new \RuntimeException('Failed to open CSV file: ' . $filePath);
         }
 
         // Skip the header row
         fgetcsv($file);
 
         while (($data = fgetcsv($file, null, ';')) !== false) {
-            try {
-                $merchant = new Merchant(
-                    id: Uuid::fromString($data[0]),
-                    reference: $data[1],
-                    email: $data[2],
-                    liveOn: new \DateTimeImmutable($data[3]),
-                    disbursementFrequency: DisbursementFrequency::from($data[4]),
-                    minimumMonthlyFee: (int)$data[5] * 100, // Convert to cents
-                );
-
-                $this->merchantRepository->save($merchant);
-                $output->writeln('<info>Imported merchant: ' . $data[1] . '</info>');
-            } catch (\Exception $e) {
-                $output->writeln('<error>Failed to import merchant: ' . $e->getMessage() . '</error>');
-            }
+            yield $data;
         }
 
         fclose($file);
-
-        $output->writeln('<info>All merchants have been imported.</info>');
-        return Command::SUCCESS;
     }
 }
