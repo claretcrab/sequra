@@ -7,6 +7,7 @@ use App\Domain\Merchant;
 use App\Domain\MerchantRepository;
 use App\Port\Repository\DbalMerchantRepository;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -15,18 +16,28 @@ class DbalMerchantRepositoryTest extends KernelTestCase
     private Connection $connection;
     private MerchantRepository $repository;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
 
         $this->connection = $kernel->getContainer()->get('doctrine.dbal.default_connection');
         $this->repository = $kernel->getContainer()->get(DbalMerchantRepository::class);
+        $this->connection->beginTransaction();
     }
 
+    /**
+     * @throws Exception
+     */
     protected function tearDown(): void
     {
         parent::tearDown();
 
+        if ($this->connection->isTransactionActive()) {
+            $this->connection->rollBack();
+        }
         $this->connection->close();
     }
 
