@@ -6,14 +6,13 @@ use Symfony\Component\Uid\Uuid;
 
 class Order
 {
-    private ?Uuid $disbursementId = null;
-
     public function __construct(
         private string $id,
         private string $merchantReference,
         private int $amount,
         private \DateTimeImmutable $createdAt,
         private DisbursementStatus $disbursementStatus = DisbursementStatus::PENDING,
+        private ?Uuid $disbursementId = null,
     ) {
     }
 

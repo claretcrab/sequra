@@ -7,6 +7,7 @@ use App\Domain\Order;
 use App\Domain\OrderRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Symfony\Component\Uid\Uuid;
 
 class DbalOrderRepository implements OrderRepository
 {
@@ -29,12 +30,14 @@ class DbalOrderRepository implements OrderRepository
                 'amount' => ':amount',
                 'created_at' => ':created_at',
                 'disbursement_status' => ':disbursement_status',
+                'disbursement_id' => ':disbursement_id',
             ])
             ->setParameter('id', $order->id())
             ->setParameter('merchant_reference', $order->merchantReference())
             ->setParameter('amount', $order->amount())
             ->setParameter('created_at', $order->createdAt()->format('Y-m-d'))
-            ->setParameter('disbursement_status', $order->disbursementStatus()->value);
+            ->setParameter('disbursement_status', $order->disbursementStatus()->value)
+            ->setParameter('disbursement_id', $order->disbursementId());
         $qb->executeStatement();
     }
 
@@ -59,6 +62,7 @@ class DbalOrderRepository implements OrderRepository
             $result['amount'],
             new \DateTimeImmutable($result['created_at']),
             DisbursementStatus::from($result['disbursement_status']),
+            isset($result['disbursement_id']) ? Uuid::fromString($result['disbursement_id']) : null,
         );
     }
 
@@ -83,8 +87,9 @@ class DbalOrderRepository implements OrderRepository
             ->from('orders')
             ->where('disbursement_status = :status')
             ->andWhere('merchant_reference = :merchant_reference')
-            ->setParameter('status', DisbursementStatus::PENDING->value);
-        $qb->setParameter('merchant_reference', $merchantReference);
+            ->setParameter('status', DisbursementStatus::PENDING->value)
+            ->setParameter('merchant_reference', $merchantReference)
+            ->orderBy('created_at', 'ASC');
 
         $results = $qb->executeQuery()->fetchAllAssociative();
 
@@ -96,6 +101,7 @@ class DbalOrderRepository implements OrderRepository
                 $result['amount'],
                 new \DateTimeImmutable($result['created_at']),
                 DisbursementStatus::from($result['disbursement_status']),
+                isset($result['disbursement_id']) ? Uuid::fromString($result['disbursement_id']) : null,
             );
         }
 

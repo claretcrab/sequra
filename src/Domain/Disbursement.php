@@ -14,7 +14,7 @@ class Disbursement
     ) {
     }
 
-    public function id(): string
+    public function id(): Uuid
     {
         return $this->id;
     }
