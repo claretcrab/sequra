@@ -2,8 +2,11 @@
 
 namespace App\Domain;
 
+use Symfony\Component\Uid\Uuid;
+
 class Order
 {
+    private ?Uuid $disbursementId = null;
 
     public function __construct(
         private string $id,
@@ -37,5 +40,10 @@ class Order
     public function disbursementStatus(): DisbursementStatus
     {
         return $this->disbursementStatus;
+    }
+
+    public function disbursementId(): ?Uuid
+    {
+        return $this->disbursementId;
     }
 }

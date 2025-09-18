@@ -66,4 +66,29 @@ class DbalMerchantRepository implements MerchantRepository
         );
     }
 
+    public function findByReference(string $reference): ?Merchant
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('*')
+            ->from('merchants')
+            ->where('reference = :reference')
+            ->setParameter('reference', $reference);
+
+        $result = $qb->executeQuery()->fetchAssociative();
+
+        if (!$result) {
+            return null;
+        }
+
+        return new Merchant(
+            Uuid::fromString($result['id']),
+            $result['reference'],
+            $result['email'],
+            new \DateTimeImmutable($result['live_on']),
+            DisbursementFrequency::from($result['disbursement_frequency']),
+            (int)$result['minimum_monthly_fee']
+        );
+    }
+
 }

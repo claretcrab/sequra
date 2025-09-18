@@ -62,4 +62,44 @@ class DbalOrderRepository implements OrderRepository
         );
     }
 
+    public function findMerchantsWithoutDisbursement(): array
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('DISTINCT merchant_reference')
+            ->from('orders')
+            ->where('disbursement_status = :status')
+            ->setParameter('status', DisbursementStatus::PENDING->value);
+
+        return $qb->executeQuery()->fetchFirstColumn();
+    }
+
+
+    public function findOrdersWithoutDisbursementByMerchant(string $merchantReference): array
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('*')
+            ->from('orders')
+            ->where('disbursement_status = :status')
+            ->andWhere('merchant_reference = :merchant_reference')
+            ->setParameter('status', DisbursementStatus::PENDING->value);
+        $qb->setParameter('merchant_reference', $merchantReference);
+
+        $results = $qb->executeQuery()->fetchAllAssociative();
+
+        $orders = [];
+        foreach ($results as $result) {
+            $orders[] = new Order(
+                $result['id'],
+                $result['merchant_reference'],
+                $result['amount'],
+                new \DateTimeImmutable($result['created_at']),
+                DisbursementStatus::from($result['disbursement_status']),
+            );
+        }
+
+        return $orders;
+    }
+
 }
