@@ -94,21 +94,7 @@ class DbalOrderRepository implements OrderRepository
             ->groupBy('created_at')
             ->orderBy('created_at', 'ASC');
 
-        $results = $qb->executeQuery()->fetchAllAssociative();
-
-        $orders = [];
-        foreach ($results as $result) {
-            $orders[] = new Order(
-                $result['id'],
-                $result['merchant_reference'],
-                $result['amount'],
-                new \DateTimeImmutable($result['created_at']),
-                DisbursementStatus::from($result['disbursement_status']),
-                isset($result['disbursement_id']) ? Uuid::fromString($result['disbursement_id']) : null,
-            );
-        }
-
-        return $orders;
+        return $qb->executeQuery()->fetchAllAssociative();
     }
 
     /**

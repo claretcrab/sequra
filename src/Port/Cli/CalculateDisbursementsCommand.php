@@ -41,6 +41,7 @@ class CalculateDisbursementsCommand extends Command
                 merchantReference: $merchantReference,
             );
 
+            //TODO extract into a service
             foreach ($ordersAggregate as $orderAggregate) {
                 if ($merchant->disbursementFrequency() === DisbursementFrequency::DAILY) {
                     $disbursementId = Uuid::v7();
@@ -50,11 +51,12 @@ class CalculateDisbursementsCommand extends Command
                         amount: $orderAggregate['total_amount'],
                         fee: $orderAggregate['total_fee'],
                     );
+                    //TODO: transaction
                     $this->disbursementRepository->save($disbursement);
 
                     $this->orderRepository->markOrdersAsDisbursed(
                         merchantReference: $merchantReference,
-                        date: $orderAggregate['date'],
+                        date: $orderAggregate['created_at'],
                         disbursementId: $disbursementId,
                     );
 
