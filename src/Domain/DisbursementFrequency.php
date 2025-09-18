@@ -2,8 +2,8 @@
 
 namespace App\Domain;
 
-enum DisbursementFrequency
+enum DisbursementFrequency: string
 {
-    case DAILY;
-    case WEEKLY;
+    case DAILY = 'DAILY';
+    case WEEKLY = 'WEEKLY';
 }
