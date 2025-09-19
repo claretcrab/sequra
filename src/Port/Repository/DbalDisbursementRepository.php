@@ -66,9 +66,10 @@ class DbalDisbursementRepository implements DisbursementRepository
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
-            ->select('COUNT(*) as total_disbursements', 'SUM(amount) as total_amount', 'SUM(fee) as total_fee')
-            ->from('disbursements');
+            ->select('date_trunc(\'year\', disbursed_at) as year, COUNT(1) as total_number, SUM(amount) as total_amount, SUM(fee) as total_fee')
+            ->from('disbursements')
+            ->groupBy('year');
 
-        return $qb->executeQuery()->fetchAssociative() ?: [];
+        return $qb->executeQuery()->fetchAllAssociative();
     }
 }
