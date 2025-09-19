@@ -56,6 +56,7 @@ Goal https://sequra.github.io/backend-challenge/
 - The application is designed to be run as a set of CLI commands, which can be scheduled with cron jobs for regular execution.
 - Orders are just disbursed once, so if you run the import command multiple times, it won't create duplicate disbursements. Once disbursed, the disbursed status is changed and referenced to a disbursement.
 - Same with monthly minimum fees, they are charged once per merchant and month.
+- Added .git folder, so you can see the commit history. (Keep in mind I didn't write meaningful commit messages, I usually squash commits before merging to main branch)
 
 # TODOs
 - Dockerize the main app
