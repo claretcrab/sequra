@@ -23,7 +23,9 @@ final class Version20250918155621 extends AbstractMigration
 CREATE TABLE disbursements (
     id CHAR(36) NOT NULL PRIMARY KEY,
     amount INT NOT NULL,
-    fee INT NOT NULL
+    fee INT NOT NULL,
+    merchant_reference VARCHAR(255) NOT NULL,
+    disbursed_at DATE NOT NULL
 );
 SQL;
 

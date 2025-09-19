@@ -27,10 +27,14 @@ class DbalDisbursementRepository implements DisbursementRepository
                 'id' => ':id',
                 'amount' => ':amount',
                 'fee' => ':fee',
+                'merchant_reference' => ':merchant_reference',
+                'disbursed_at' => ':disbursed_at',
             ])
             ->setParameter('id', $disbursement->id()->toString())
             ->setParameter('amount', $disbursement->amount())
-            ->setParameter('fee', $disbursement->fee());
+            ->setParameter('fee', $disbursement->fee())
+            ->setParameter('merchant_reference', $disbursement->merchantReference())
+            ->setParameter('disbursed_at', $disbursement->disbursedAt()->format('Y-m-d'));
         $qb->executeStatement();
     }
 
@@ -53,6 +57,8 @@ class DbalDisbursementRepository implements DisbursementRepository
             Uuid::fromString($result['id']),
             $result['amount'],
             $result['fee'],
+            $result['merchant_reference'],
+            new \DateTimeImmutable($result['disbursed_at'])
         );
     }
 }

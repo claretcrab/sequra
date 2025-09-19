@@ -10,7 +10,9 @@ interface OrderRepository
 
     public function findById(string $id): ?Order;
 
-    public function findOrdersWithoutDisbursementByMerchant(string $merchantReference): array;
+    public function findMerchantsWithoutDisbursement(\DateTimeImmutable $createdAt): array;
 
-    public function markOrdersAsDisbursed(string $merchantReference, string $date, Uuid $disbursementId): void;
+    public function findOrdersWithoutDisbursementByMerchant(string $merchantReference, \DateTimeImmutable $createdAt): array;
+
+    public function markOrdersAsDisbursed(string $merchantReference, \DateTimeImmutable $createdAt, Uuid $disbursementId): void;
 }

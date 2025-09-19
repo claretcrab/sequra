@@ -68,39 +68,41 @@ class DbalOrderRepository implements OrderRepository
         );
     }
 
-    public function findMerchantsWithoutDisbursement(): array
+    public function findMerchantsWithoutDisbursement(\DateTimeImmutable $createdAt): array
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->select('DISTINCT merchant_reference')
             ->from('orders')
             ->where('disbursement_status = :status')
-            ->setParameter('status', DisbursementStatus::PENDING->value);
+            ->andWhere('created_at = :created_at')
+            ->setParameter('status', DisbursementStatus::PENDING->value)
+            ->setParameter('created_at', $createdAt->format('Y-m-d'));
 
         return $qb->executeQuery()->fetchFirstColumn();
     }
 
 
-    public function findOrdersWithoutDisbursementByMerchant(string $merchantReference): array
+    public function findOrdersWithoutDisbursementByMerchant(string $merchantReference, \DateTimeImmutable $createdAt): array
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
-            ->select('created_at, SUM(amount) as total_amount, SUM(fee) as total_fee')
+            ->select('SUM(amount) as total_amount, SUM(fee) as total_fee')
             ->from('orders')
             ->where('disbursement_status = :status')
             ->andWhere('merchant_reference = :merchant_reference')
+            ->andWhere('created_at <= :created_at')
             ->setParameter('status', DisbursementStatus::PENDING->value)
             ->setParameter('merchant_reference', $merchantReference)
-            ->groupBy('created_at')
-            ->orderBy('created_at', 'ASC');
+            ->setParameter('created_at', $createdAt->format('Y-m-d'));
 
-        return $qb->executeQuery()->fetchAllAssociative();
+        return $qb->executeQuery()->fetchAssociative();
     }
 
     /**
      * @throws Exception
      */
-    public function markOrdersAsDisbursed(string $merchantReference, string $date, Uuid $disbursementId): void
+    public function markOrdersAsDisbursed(string $merchantReference, \DateTimeImmutable $createdAt, Uuid $disbursementId): void
     {
         $qb = $this->connection->createQueryBuilder();
         $qb
@@ -108,11 +110,11 @@ class DbalOrderRepository implements OrderRepository
             ->set('disbursement_status', ':status')
             ->set('disbursement_id', ':disbursement_id')
             ->where('merchant_reference = :merchant_reference')
-            ->andWhere('created_at = :date')
+            ->andWhere('created_at <= :created_at')
             ->setParameter('status', DisbursementStatus::DISBURSED->value)
             ->setParameter('disbursement_id', $disbursementId->toString())
             ->setParameter('merchant_reference', $merchantReference)
-            ->setParameter('date', $date);
+            ->setParameter('created_at', $createdAt->format('Y-m-d'));
 
         $qb->executeStatement();
     }

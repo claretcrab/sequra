@@ -11,6 +11,8 @@ class Disbursement
         private Uuid $id,
         private int $amount,
         private int $fee,
+        private string $merchantReference,
+        private \DateTimeImmutable $disbursedAt,
     ) {
     }
 
@@ -27,5 +29,15 @@ class Disbursement
     public function fee(): int
     {
         return $this->fee;
+    }
+
+    public function merchantReference(): string
+    {
+        return $this->merchantReference;
+    }
+
+    public function disbursedAt(): \DateTimeImmutable
+    {
+        return $this->disbursedAt;
     }
 }
