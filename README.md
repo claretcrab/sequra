@@ -64,7 +64,7 @@ Goal https://sequra.github.io/backend-challenge/
   - Create fixtures for tests
 - Add more value objects
 - Add validations (e.g. email format)
-- Add more error handling
+- Add more error handling and Domain exceptions
 - Add indexes to the database tables
 - CQRS with symfony messenger
   - Async calculations with retries
