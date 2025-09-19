@@ -47,7 +47,7 @@ class MonthlyMinimumFeeCalculatorTest extends TestCase
     public function testMerchantNotEligible(): void
     {
         $merchant = $this->createMock(Merchant::class);
-        $merchant->method('minimumMonthlyFee')->willReturn(100);
+        $merchant->method('isNotEligibleForMonthlyMinimumFee')->willReturn(true);
 
         $this->merchantRepository
             ->method('findByReference')
@@ -64,6 +64,7 @@ class MonthlyMinimumFeeCalculatorTest extends TestCase
     public function testSuccessfulCalculation(): void
     {
         $merchant = $this->createMock(Merchant::class);
+        $merchant->method('isNotEligibleForMonthlyMinimumFee')->willReturn(false);
         $merchant->method('minimumMonthlyFee')->willReturn(200);
 
         $this->merchantRepository

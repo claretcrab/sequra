@@ -3,10 +3,10 @@
 namespace App\Application;
 
 use App\Domain\Disbursement;
-use App\Domain\DisbursementFrequency;
 use App\Domain\DisbursementRepository;
 use App\Domain\MerchantRepository;
 use App\Domain\OrderRepository;
+use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -17,6 +17,7 @@ class DisbursementCalculator
         private readonly MerchantRepository $merchantRepository,
         private readonly DisbursementRepository $disbursementRepository,
         private readonly LoggerInterface $logger,
+        private readonly Connection $connection,
     ) {
     }
 
@@ -30,7 +31,7 @@ class DisbursementCalculator
             return;
         }
 
-        if ($this->isNotEligible($merchant, $calculationDate)) {
+        if ($merchant->isNotEligibleForDisbursement($calculationDate)) {
             $this->logger->info('Merchant not eligible: '.$merchantReference);
 
             return;
@@ -50,19 +51,24 @@ class DisbursementCalculator
             merchantReference: $merchantReference,
             disbursedAt: $calculationDate,
         );
-        // TODO: transaction
-        $this->disbursementRepository->save($disbursement);
 
-        $this->orderRepository->markOrdersAsDisbursed(
-            merchantReference: $merchantReference,
-            createdAt: $calculationDate,
-            disbursementId: $disbursementId,
-        );
-    }
+        try {
+            $this->connection->beginTransaction();
 
-    public function isNotEligible(\App\Domain\Merchant $merchant, \DateTimeImmutable $calculationDate): bool
-    {
-        return DisbursementFrequency::WEEKLY === $merchant->disbursementFrequency()
-            && $merchant->liveOn()->format('N') !== $calculationDate->format('N');
+            $this->disbursementRepository->save($disbursement);
+
+            $this->orderRepository->markOrdersAsDisbursed(
+                merchantReference: $merchantReference,
+                createdAt: $calculationDate,
+                disbursementId: $disbursementId,
+            );
+        } catch (\Exception $e) {
+            if ($this->connection->isTransactionActive()) {
+                $this->connection->rollBack();
+            }
+            $this->logger->error('Failed transaction: '.$e->getMessage());
+
+            return;
+        }
     }
 }

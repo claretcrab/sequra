@@ -28,7 +28,7 @@ class MonthlyMinimumFeeCalculator
             return;
         }
 
-        if ($this->isNotEligible($merchant, $fee)) {
+        if ($merchant->isNotEligibleForMonthlyMinimumFee($fee)) {
             $this->logger->info('Merchant not eligible: '.$merchantReference);
 
             return;
@@ -45,10 +45,5 @@ class MonthlyMinimumFeeCalculator
         } catch (MonthlyMinimumFeeExistsException $e) {
             $this->logger->warning('Monthly minimum fee already exists for merchant: '.$merchantReference);
         }
-    }
-
-    public function isNotEligible(\App\Domain\Merchant $merchant, int $fee): bool
-    {
-        return $fee >= $merchant->minimumMonthlyFee();
     }
 }

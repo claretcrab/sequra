@@ -4,7 +4,6 @@ namespace App\Tests\Application;
 
 use App\Application\DisbursementCalculator;
 use App\Domain\Disbursement;
-use App\Domain\DisbursementFrequency;
 use App\Domain\DisbursementRepository;
 use App\Domain\Merchant;
 use App\Domain\MerchantRepository;
@@ -52,8 +51,7 @@ class DisbursementCalculatorTest extends TestCase
     public function testMerchantNotEligible(): void
     {
         $merchant = $this->createMock(Merchant::class);
-        $merchant->method('disbursementFrequency')->willReturn(DisbursementFrequency::WEEKLY);
-        $merchant->method('liveOn')->willReturn(new \DateTimeImmutable('2024-01-01'));
+        $merchant->method('isNotEligibleForDisbursement')->willReturn(true);
 
         $this->merchantRepository
             ->method('findByReference')
@@ -67,10 +65,10 @@ class DisbursementCalculatorTest extends TestCase
         $this->calculator->calculate(new \DateTimeImmutable('2024-01-02'), 'merchant-1');
     }
 
-    public function testSuccessfulDailyDisbursement(): void
+    public function testSuccessfulCalculation(): void
     {
         $merchant = $this->createMock(Merchant::class);
-        $merchant->method('disbursementFrequency')->willReturn(DisbursementFrequency::DAILY);
+        $merchant->method('isNotEligibleForDisbursement')->willReturn(false);
 
         $this->merchantRepository
             ->method('findByReference')
@@ -90,31 +88,5 @@ class DisbursementCalculatorTest extends TestCase
             ->method('markOrdersAsDisbursed');
 
         $this->calculator->calculate(new \DateTimeImmutable('2024-01-01'), 'merchant-1');
-    }
-
-    public function testSuccessfulWeeklyDisbursement(): void
-    {
-        $merchant = $this->createMock(Merchant::class);
-        $merchant->method('disbursementFrequency')->willReturn(DisbursementFrequency::WEEKLY);
-        $merchant->method('liveOn')->willReturn(new \DateTimeImmutable('2024-01-01'));
-
-        $this->merchantRepository
-            ->method('findByReference')
-            ->willReturn($merchant);
-
-        $this->orderRepository
-            ->method('findOrdersWithoutDisbursementByMerchant')
-            ->willReturn(['total_amount' => 1000, 'total_fee' => 50]);
-
-        $this->disbursementRepository
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(Disbursement::class));
-
-        $this->orderRepository
-            ->expects($this->once())
-            ->method('markOrdersAsDisbursed');
-
-        $this->calculator->calculate(new \DateTimeImmutable('2024-01-08'), 'merchant-1');
     }
 }
