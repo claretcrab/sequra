@@ -40,4 +40,16 @@ class DbalMonthlyMinimumFeeRepository implements MonthlyMinimumFeeRepository
             throw new MonthlyMinimumFeeExistsException('Monthly minimum fee already exists for this merchant and date.', 0, $e);
         }
     }
+
+    public function getStatistics(): array
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('date_trunc(\'year\', created_at) as year, COUNT(1) as total_number, SUM(fee) as total_fee')
+            ->from('monthly_minimum_fees')
+            ->orderBy('year', 'ASC')
+            ->groupBy('year');
+
+        return $qb->executeQuery()->fetchAllAssociative();
+    }
 }

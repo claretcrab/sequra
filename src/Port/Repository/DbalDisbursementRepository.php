@@ -68,6 +68,7 @@ class DbalDisbursementRepository implements DisbursementRepository
         $qb
             ->select('date_trunc(\'year\', disbursed_at) as year, COUNT(1) as total_number, SUM(amount) as total_amount, SUM(fee) as total_fee')
             ->from('disbursements')
+            ->orderBy('year', 'ASC')
             ->groupBy('year');
 
         return $qb->executeQuery()->fetchAllAssociative();
