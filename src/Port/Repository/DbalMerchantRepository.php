@@ -62,7 +62,7 @@ class DbalMerchantRepository implements MerchantRepository
             $result['email'],
             new \DateTimeImmutable($result['live_on']),
             DisbursementFrequency::from($result['disbursement_frequency']),
-            (int)$result['minimum_monthly_fee']
+            (int) $result['minimum_monthly_fee']
         );
     }
 
@@ -87,8 +87,7 @@ class DbalMerchantRepository implements MerchantRepository
             $result['email'],
             new \DateTimeImmutable($result['live_on']),
             DisbursementFrequency::from($result['disbursement_frequency']),
-            (int)$result['minimum_monthly_fee']
+            (int) $result['minimum_monthly_fee']
         );
     }
-
 }

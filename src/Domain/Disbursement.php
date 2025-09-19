@@ -6,7 +6,6 @@ use Symfony\Component\Uid\Uuid;
 
 class Disbursement
 {
-
     public function __construct(
         private Uuid $id,
         private int $amount,

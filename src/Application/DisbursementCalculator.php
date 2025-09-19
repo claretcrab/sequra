@@ -17,19 +17,22 @@ class DisbursementCalculator
         private readonly MerchantRepository $merchantRepository,
         private readonly DisbursementRepository $disbursementRepository,
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function calculate(\DateTimeImmutable $calculationDate, string $merchantReference): void
     {
         $merchant = $this->merchantRepository->findByReference($merchantReference);
 
-        if ($merchant === null) {
-            $this->logger->error('Merchant not found: ' . $merchantReference);
+        if (null === $merchant) {
+            $this->logger->error('Merchant not found: '.$merchantReference);
+
             return;
         }
 
         if ($this->isNotEligible($merchant, $calculationDate)) {
-            $this->logger->info('Merchant not eligible: ' . $merchantReference);
+            $this->logger->info('Merchant not eligible: '.$merchantReference);
+
             return;
         }
 
@@ -47,7 +50,7 @@ class DisbursementCalculator
             merchantReference: $merchantReference,
             disbursedAt: $calculationDate,
         );
-        //TODO: transaction
+        // TODO: transaction
         $this->disbursementRepository->save($disbursement);
 
         $this->orderRepository->markOrdersAsDisbursed(
@@ -57,14 +60,9 @@ class DisbursementCalculator
         );
     }
 
-    /**
-     * @param \App\Domain\Merchant $merchant
-     * @param \DateTimeImmutable $calculationDate
-     * @return bool
-     */
     public function isNotEligible(\App\Domain\Merchant $merchant, \DateTimeImmutable $calculationDate): bool
     {
-        return $merchant->disbursementFrequency() === DisbursementFrequency::WEEKLY &&
-            $merchant->liveOn()->format('N') !== $calculationDate->format('N');
+        return DisbursementFrequency::WEEKLY === $merchant->disbursementFrequency()
+            && $merchant->liveOn()->format('N') !== $calculationDate->format('N');
     }
 }

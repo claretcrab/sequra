@@ -22,13 +22,15 @@ class ImportOrdersCommand extends Command
         $filePath = 'csv/orders.csv';
 
         if (!file_exists($filePath)) {
-            $output->writeln('<error>CSV file not found: ' . $filePath . '</error>');
+            $output->writeln('<error>CSV file not found: '.$filePath.'</error>');
+
             return Command::FAILURE;
         }
 
         $file = fopen($filePath, 'r');
-        if ($file === false) {
-            $output->writeln('<error>Failed to open CSV file: ' . $filePath . '</error>');
+        if (false === $file) {
+            $output->writeln('<error>Failed to open CSV file: '.$filePath.'</error>');
+
             return Command::FAILURE;
         }
 
@@ -40,20 +42,21 @@ class ImportOrdersCommand extends Command
                 $order = new Order(
                     id: $data[0],
                     merchantReference: $data[1],
-                    amount: (int)$data[2] * 100, // Convert to cents,
+                    amount: (int) $data[2] * 100, // Convert to cents,
                     createdAt: new \DateTimeImmutable($data[3]),
                 );
 
                 $this->orderRepository->save($order);
-                $output->writeln('<info>Imported order: ' . $data[1] . '</info>');
+                $output->writeln('<info>Imported order: '.$data[1].'</info>');
             } catch (\Exception $e) {
-                $output->writeln('<error>Failed to import order: ' . $e->getMessage() . '</error>');
+                $output->writeln('<error>Failed to import order: '.$e->getMessage().'</error>');
             }
         }
 
         fclose($file);
 
         $output->writeln('<info>All orders have been imported.</info>');
+
         return Command::SUCCESS;
     }
 }

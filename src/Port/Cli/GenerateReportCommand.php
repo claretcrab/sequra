@@ -2,16 +2,11 @@
 
 namespace App\Port\Cli;
 
-use App\Domain\DisbursementFrequency;
 use App\Domain\DisbursementRepository;
-use App\Domain\Merchant;
-use App\Domain\MerchantRepository;
-use App\Domain\OrderRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Uid\Uuid;
 
 #[AsCommand(name: 'app:generate-report')]
 class GenerateReportCommand extends Command
@@ -24,9 +19,7 @@ class GenerateReportCommand extends Command
 
     public function __invoke(OutputInterface $output): int
     {
-
         $statistics = $this->disbursementRepository->getStatistics();
-
 
         $table = new Table($output);
         $table
@@ -35,16 +28,16 @@ class GenerateReportCommand extends Command
 
         $row = 0;
         foreach ($statistics as $statistic) {
-            $year = new \DateTimeImmutable(($statistic['year']));
+            $year = new \DateTimeImmutable($statistic['year']);
             $table->setRow($row, [
                 $year->format('Y'),
                 $statistic['total_number'],
-                $statistic['total_amount'] / 100 . ' €',
-                $statistic['total_fee'] / 100 . ' €',
+                $statistic['total_amount'] / 100 .' €',
+                $statistic['total_fee'] / 100 .' €',
                 '',
                 '',
             ]);
-            $row++;
+            ++$row;
         }
 
         $table->render();

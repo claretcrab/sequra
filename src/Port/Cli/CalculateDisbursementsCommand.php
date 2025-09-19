@@ -13,20 +13,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CalculateDisbursementsCommand extends Command
 {
     public function __construct(
-        private readonly OrderRepository    $orderRepository,
+        private readonly OrderRepository $orderRepository,
         private readonly DisbursementCalculator $disbursementCalculator,
-    )
-    {
+    ) {
         parent::__construct();
     }
 
     public function __invoke(#[Argument('Day(s) offset.')] int $offset, OutputInterface $output): int
     {
         $today = new \DateTimeImmutable('now');
-        $calculationDate = $today->modify('-' . $offset . ' days');
+        $calculationDate = $today->modify('-'.$offset.' days');
 
         do {
-            $output->writeln('<info>Calculating disbursements for date: ' . $calculationDate->format('Y-m-d') . '</info>');
+            $output->writeln('<info>Calculating disbursements for date: '.$calculationDate->format('Y-m-d').'</info>');
 
             $merchantReferences = $this->orderRepository->findMerchantsWithoutDisbursement($calculationDate);
 

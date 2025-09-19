@@ -6,7 +6,6 @@ use Symfony\Component\Uid\Uuid;
 
 class Merchant
 {
-
     public function __construct(
         private Uuid $id,
         private string $reference,

@@ -24,13 +24,15 @@ class ImportMerchantsCommand extends Command
         $filePath = 'csv/merchants.csv';
 
         if (!file_exists($filePath)) {
-            $output->writeln('<error>CSV file not found: ' . $filePath . '</error>');
+            $output->writeln('<error>CSV file not found: '.$filePath.'</error>');
+
             return Command::FAILURE;
         }
 
         $file = fopen($filePath, 'r');
-        if ($file === false) {
-            $output->writeln('<error>Failed to open CSV file: ' . $filePath . '</error>');
+        if (false === $file) {
+            $output->writeln('<error>Failed to open CSV file: '.$filePath.'</error>');
+
             return Command::FAILURE;
         }
 
@@ -45,19 +47,20 @@ class ImportMerchantsCommand extends Command
                     email: $data[2],
                     liveOn: new \DateTimeImmutable($data[3]),
                     disbursementFrequency: DisbursementFrequency::from($data[4]),
-                    minimumMonthlyFee: (int)$data[5] * 100, // Convert to cents
+                    minimumMonthlyFee: (int) $data[5] * 100, // Convert to cents
                 );
 
                 $this->merchantRepository->save($merchant);
-                $output->writeln('<info>Imported merchant: ' . $data[1] . '</info>');
+                $output->writeln('<info>Imported merchant: '.$data[1].'</info>');
             } catch (\Exception $e) {
-                $output->writeln('<error>Failed to import merchant: ' . $e->getMessage() . '</error>');
+                $output->writeln('<error>Failed to import merchant: '.$e->getMessage().'</error>');
             }
         }
 
         fclose($file);
 
         $output->writeln('<info>All merchants have been imported.</info>');
+
         return Command::SUCCESS;
     }
 }

@@ -59,13 +59,13 @@ class Order
     public function fee(): int
     {
         if ($this->amount < 5000) {
-            return (int)round($this->amount * 0.01);
+            return (int) round($this->amount * 0.01);
         }
 
         if ($this->amount <= 30000) {
-            return (int)round($this->amount * 0.0095);
+            return (int) round($this->amount * 0.0095);
         }
 
-        return (int)round($this->amount * 0.0085);
+        return (int) round($this->amount * 0.0085);
     }
 }

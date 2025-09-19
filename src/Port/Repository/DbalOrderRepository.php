@@ -82,7 +82,6 @@ class DbalOrderRepository implements OrderRepository
         return $qb->executeQuery()->fetchFirstColumn();
     }
 
-
     public function findOrdersWithoutDisbursementByMerchant(string $merchantReference, \DateTimeImmutable $createdAt): array
     {
         $qb = $this->connection->createQueryBuilder();
@@ -118,5 +117,4 @@ class DbalOrderRepository implements OrderRepository
 
         $qb->executeStatement();
     }
-
 }
