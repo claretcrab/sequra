@@ -9,8 +9,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'app:generate-report')]
-class GenerateReportCommand extends Command
+#[AsCommand(name: 'app:generate-reports')]
+class GenerateReportsCommand extends Command
 {
     public function __construct(
         private readonly DisbursementRepository $disbursementRepository,

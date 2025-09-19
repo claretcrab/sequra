@@ -23,13 +23,13 @@ class OrderTest extends TestCase
         $this->assertEquals($expectedFee, $order->fee());
     }
 
-    public static function feeProvider(): array {
+    public static function feeProvider(): array
+    {
         return [
-            "order amount below 50" => [1000, 10],
-            "order amount between 50 and 300" => [10000, 95],
-            "order amount above 300" => [100000, 850],
-            "order amount with round up" => [1099, 11],
+            'order amount below 50' => [1000, 10],
+            'order amount between 50 and 300' => [10000, 95],
+            'order amount above 300' => [100000, 850],
+            'order amount with round up' => [1099, 11],
         ];
     }
-
 }

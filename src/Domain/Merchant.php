@@ -45,4 +45,15 @@ class Merchant
     {
         return $this->minimumMonthlyFee;
     }
+
+    public function isNotEligibleForDisbursement(\DateTimeImmutable $calculationDate): bool
+    {
+        return DisbursementFrequency::WEEKLY === $this->disbursementFrequency
+            && $this->liveOn->format('N') !== $calculationDate->format('N');
+    }
+
+    public function isNotEligibleForMonthlyMinimumFee(int $fee): bool
+    {
+        return $fee >= $this->minimumMonthlyFee;
+    }
 }

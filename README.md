@@ -1,24 +1,31 @@
 
-Requirements: https://symfony.com/doc/current/setup.html#technical-requirements
+Requirements: https://symfony.com/doc/7.3/setup.html#technical-requirements
 
 # Installation
+```
 docker-compose up -d
+composer install
 php bin/console doctrine:database:create
 php bin/console doctrine:database:create --env=test
 php bin/console doctrine:migrations:migrate
 php bin/console doctrine:migrations:migrate --env=test
+```
 
 # Run tests
+```
 php bin/phpunit
+```
 
 # Run application commands
+```
 php bin/console app:import-merchants
 php bin/console app:import-orders --no-debug
 php bin/console app:calculate-disbursements 1200 --no-debug (for first import)
 php bin/console app:calculate-disbursements 1 (for the daily cron job)
 php bin/console app:calculate-monthly-minimum-fees 40 (for the first import)
 php bin/console app:calculate-monthly-minimum-fees 1 (for the monthly cron job)
-php bin/console app:generate-report
+php bin/console app:generate-reports
+```
 
 # Result
 ```
@@ -26,23 +33,37 @@ php bin/console app:generate-report
 | Year | Number of disbursements | Amount disbursed to merchants | Amount of order fees |
 +------+-------------------------+-------------------------------+----------------------+
 | 2022 | 1532                    | 37751723 €                    | 338118.88 €          |
-| 2023 | 5853                    | 107913515 €                   | 969591.22 €          |
+| 2023 | 10247                   | 188565417 €                   | 1694173.21 €         |
 +------+-------------------------+-------------------------------+----------------------+
 +------+--------------------------------+--------------------------------+
 | Year | Number of monthly fees charged | Amount of monthly fees charged |
 +------+--------------------------------+--------------------------------+
 | 2022 | 13                             | 346.21 €                       |
-| 2023 | 77                             | 1830.6 €                       |
+| 2023 | 146                            | 3471.91 €                      |
 +------+--------------------------------+--------------------------------+
 ```
+
+# Explanation
+Goal https://sequra.github.io/backend-challenge/
+
+- The application is built with Symfony 7.3 and uses Doctrine Dbal for database interactions.
+- The application imports merchants and orders from CSV files, calculates daily and weekly disbursements, monthly minimum fees and generates a report.
+- The application is structured in a modular way
+  - Domain layer: contains the business logic and domain entities.
+  - Infrastructure layer: contains the database interactions and cli commands.
+  - Application layer: contains the use cases and application services.
+- The application includes some unit and integration tests to ensure correctness.
+- The application is designed to be run as a set of CLI commands, which can be scheduled with cron jobs for regular execution.
 
 # TODOs
 - Dockerize the main app
 - Add more unit and integration tests
+  - Create fixtures for tests
 - Add more value objects
 - Add validations (e.g. email format)
 - Add more error handling
 - Add indexes to the database tables
+- Async calculations
 
 # AI tools
 Just used GitHub Copilot to auto-complete some parts of the code and GitHub Copilot Chat to help with some errors and optimizations.

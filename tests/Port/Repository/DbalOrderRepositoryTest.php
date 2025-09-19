@@ -2,16 +2,13 @@
 
 namespace App\Tests\Port\Repository;
 
-use App\Domain\DisbursementFrequency;
 use App\Domain\DisbursementStatus;
-use App\Domain\Merchant;
 use App\Domain\Order;
 use App\Domain\OrderRepository;
 use App\Port\Repository\DbalOrderRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Uid\Uuid;
 
 class DbalOrderRepositoryTest extends KernelTestCase
 {
