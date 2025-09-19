@@ -11,4 +11,6 @@ interface DisbursementRepository
     public function findById(Uuid $id): ?Disbursement;
 
     public function getStatistics(): array;
+
+    public function getMonthlyStatistics(\DateTimeImmutable $disbursedAt): array;
 }

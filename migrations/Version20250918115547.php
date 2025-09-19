@@ -14,7 +14,7 @@ final class Version20250918115547 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'create merchants table and disbursement_frequency enum';
     }
 
     public function up(Schema $schema): void

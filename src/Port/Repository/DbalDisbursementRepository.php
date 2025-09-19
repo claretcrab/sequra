@@ -72,4 +72,21 @@ class DbalDisbursementRepository implements DisbursementRepository
 
         return $qb->executeQuery()->fetchAllAssociative();
     }
+
+    public function getMonthlyStatistics(\DateTimeImmutable $disbursedAt): array
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('merchant_reference,
+    DATE_TRUNC(\'month\', disbursed_at) AS disbursement_month,
+    COUNT(*) AS total_disbursements,
+    SUM(amount) AS total_amount,
+    SUM(fee) AS total_fee')
+            ->from('disbursements')
+            ->where('disbursed_at = :disbursedAt')
+            ->groupBy('merchant_reference, disbursement_month')
+            ->setParameter('disbursedAt', $disbursedAt->format('Y-m-01'));
+
+        return $qb->executeQuery()->fetchAllAssociative();
+    }
 }

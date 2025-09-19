@@ -13,9 +13,11 @@ php bin/phpunit
 
 # Run application commands
 php bin/console app:import-merchants
-APP_DEBUG=0 php bin/console app:import-orders
-APP_DEBUG=0 php bin/console app:calculate-disbursements 1200 (for first import)
+php bin/console app:import-orders --no-debug
+php bin/console app:calculate-disbursements 1200 --no-debug (for first import)
 php bin/console app:calculate-disbursements 1 (for the daily cron job)
+php bin/console app:calculate-monthly-minimum-fees 40 (for the first import)
+php bin/console app:calculate-monthly-minimum-fees 1 (for the monthly cron job)
 php bin/console app:generate-report
 
 # Result
@@ -27,3 +29,14 @@ php bin/console app:generate-report
 | 2023 | 5853                    | 107913515 €                   | 969591.22 €          |                                |                                |
 +------+-------------------------+-------------------------------+----------------------+--------------------------------+--------------------------------+
 ```
+
+# TODOs
+- Dockerize the main app
+- Add more unit and integration tests
+- Add more value objects
+- Add validations (e.g. email format)
+- Add more error handling
+- Add indexes to the database tables
+
+# AI tools
+Just used GitHub Copilot to auto-complete some parts of the code and GitHub Copilot Chat to help with some errors and optimizations.
