@@ -11,7 +11,7 @@ use Symfony\Component\Uid\Uuid;
 class MerchantTest extends TestCase
 {
     #[DataProvider('disbursementProvider')]
-    public function testIsNotElegibleForDisbursement(DisbursementFrequency $disbursementFrequency, \DateTimeImmutable $liveOn, \DateTimeImmutable $calculationDate, $expected): void
+    public function testIsNotEligibleForDisbursement(DisbursementFrequency $disbursementFrequency, \DateTimeImmutable $liveOn, \DateTimeImmutable $calculationDate, $expected): void
     {
         $merchant = new Merchant(
             id: new Uuid('2ae89f6d-e210-4993-b4d1-0bd2d279da62'),
@@ -35,7 +35,7 @@ class MerchantTest extends TestCase
     }
 
     #[DataProvider('monthlyMinimumFeeProvider')]
-    public function testIsNotElegibleForMonthlyMinimumFee(int $minimumMonthlyFee, int $monthlyFee, $expected): void
+    public function testIsNotEligibleForMonthlyMinimumFee(int $minimumMonthlyFee, int $monthlyFee, $expected): void
     {
         $merchant = new Merchant(
             id: new Uuid('2ae89f6d-e210-4993-b4d1-0bd2d279da62'),
