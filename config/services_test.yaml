@@ -9,3 +9,6 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Port\Repository\DbalMerchantRepository:  ~
     App\Port\Repository\DbalOrderRepository:  ~
+    App\Port\Repository\DbalDisbursementRepository: ~
+    App\Port\Repository\DbalMonthlyMinimumFeeRepository:  ~
+

@@ -2,6 +2,7 @@
 
 namespace App\Port\Cli;
 
+use App\Domain\BusinessConstants;
 use App\Domain\DisbursementRepository;
 use App\Domain\MonthlyMinimumFeeRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -24,6 +25,7 @@ class GenerateReportsCommand extends Command
         $disbursementStatistics = $this->disbursementRepository->getStatistics();
         $monthlyFeeStatistics = $this->monthlyMinimumFeeRepository->getStatistics();
 
+        $fmt = new \NumberFormatter(BusinessConstants::LOCALE, \NumberFormatter::CURRENCY);
         $table = new Table($output);
         $table
             ->setHeaders(['Year', 'Number of disbursements', 'Amount disbursed to merchants', 'Amount of order fees'])
@@ -35,8 +37,8 @@ class GenerateReportsCommand extends Command
             $table->setRow($row, [
                 $year->format('Y'),
                 $statistic['total_number'],
-                $statistic['total_amount'] / 100 .' €',
-                $statistic['total_fee'] / 100 .' €',
+                $fmt->formatCurrency($statistic['total_amount'] / 100, BusinessConstants::CURRENCY),
+                $fmt->formatCurrency($statistic['total_fee'] / 100, BusinessConstants::CURRENCY),
             ]);
             ++$row;
         }
@@ -54,7 +56,7 @@ class GenerateReportsCommand extends Command
             $table->setRow($row, [
                 $year->format('Y'),
                 $statistic['total_number'],
-                $statistic['total_fee'] / 100 .' €',
+                $fmt->formatCurrency($statistic['total_fee'] / 100, BusinessConstants::CURRENCY),
             ]);
             ++$row;
         }

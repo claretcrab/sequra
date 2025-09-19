@@ -32,14 +32,14 @@ php bin/console app:generate-reports
 +------+-------------------------+-------------------------------+----------------------+
 | Year | Number of disbursements | Amount disbursed to merchants | Amount of order fees |
 +------+-------------------------+-------------------------------+----------------------+
-| 2022 | 1532                    | 37751723 €                    | 338118.88 €          |
-| 2023 | 10247                   | 188565417 €                   | 1694173.21 €         |
+| 2022 | 1532                    | 37.751.723,00 €               | 338.118,88 €         |
+| 2023 | 10247                   | 188.565.417,00 €              | 1.694.173,21 €       |
 +------+-------------------------+-------------------------------+----------------------+
 +------+--------------------------------+--------------------------------+
 | Year | Number of monthly fees charged | Amount of monthly fees charged |
 +------+--------------------------------+--------------------------------+
-| 2022 | 13                             | 346.21 €                       |
-| 2023 | 146                            | 3471.91 €                      |
+| 2022 | 13                             | 346,21 €                       |
+| 2023 | 146                            | 3.471,91 €                     |
 +------+--------------------------------+--------------------------------+
 ```
 
@@ -54,6 +54,8 @@ Goal https://sequra.github.io/backend-challenge/
   - Application layer: contains the use cases and application services.
 - The application includes some unit and integration tests to ensure correctness.
 - The application is designed to be run as a set of CLI commands, which can be scheduled with cron jobs for regular execution.
+- Orders are just disbursed once, so if you run the import command multiple times, it won't create duplicate disbursements. Once disbursed, the disbursed status is changed and referenced to a disbursement.
+- Same with monthly minimum fees, they are charged once per merchant and month.
 
 # TODOs
 - Dockerize the main app
@@ -63,7 +65,10 @@ Goal https://sequra.github.io/backend-challenge/
 - Add validations (e.g. email format)
 - Add more error handling
 - Add indexes to the database tables
-- Async calculations
+- CQRS with symfony messenger
+  - Async calculations with retries
+- CI/CD with GitHub Actions
+- ...
 
 # AI tools
 Just used GitHub Copilot to auto-complete some parts of the code and GitHub Copilot Chat to help with some errors and optimizations.

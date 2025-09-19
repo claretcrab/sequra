@@ -2,6 +2,7 @@
 
 namespace App\Port\Repository;
 
+use App\Domain\BusinessConstants;
 use App\Domain\Disbursement;
 use App\Domain\DisbursementRepository;
 use Doctrine\DBAL\Connection;
@@ -34,7 +35,7 @@ class DbalDisbursementRepository implements DisbursementRepository
             ->setParameter('amount', $disbursement->amount())
             ->setParameter('fee', $disbursement->fee())
             ->setParameter('merchant_reference', $disbursement->merchantReference())
-            ->setParameter('disbursed_at', $disbursement->disbursedAt()->format('Y-m-d'));
+            ->setParameter('disbursed_at', $disbursement->disbursedAt()->format(BusinessConstants::DATE_FORMAT));
         $qb->executeStatement();
     }
 

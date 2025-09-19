@@ -3,6 +3,7 @@
 namespace App\Port\Cli;
 
 use App\Application\DisbursementCalculator;
+use App\Domain\BusinessConstants;
 use App\Domain\OrderRepository;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -25,7 +26,7 @@ class CalculateDisbursementsCommand extends Command
         $calculationDate = $today->modify('-'.$offset.' days');
 
         do {
-            $output->writeln('<info>Calculating disbursements for date: '.$calculationDate->format('Y-m-d').'</info>');
+            $output->writeln('<info>Calculating disbursements for date: '.$calculationDate->format(BusinessConstants::DATE_FORMAT).'</info>');
 
             $merchantReferences = $this->orderRepository->findMerchantsWithoutDisbursement($calculationDate);
 

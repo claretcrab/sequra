@@ -3,6 +3,7 @@
 namespace App\Port\Cli;
 
 use App\Application\MonthlyMinimumFeeCalculator;
+use App\Domain\BusinessConstants;
 use App\Domain\DisbursementRepository;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -25,7 +26,7 @@ class CalculateMonthlyMinimumFeesCommand extends Command
         $calculationDate = $today->modify('-'.$offset.' months');
 
         do {
-            $output->writeln('<info>Calculating monthly minimum fees for date: '.$calculationDate->format('Y-m-d').'</info>');
+            $output->writeln('<info>Calculating monthly minimum fees for date: '.$calculationDate->format(BusinessConstants::DATE_FORMAT).'</info>');
 
             $disbursements = $this->disbursementRepository->getMonthlyStatistics($calculationDate);
 

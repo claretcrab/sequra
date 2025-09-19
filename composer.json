@@ -18,7 +18,8 @@
         "symfony/monolog-bundle": "^3.10",
         "symfony/runtime": "7.3.*",
         "symfony/uid": "7.3.*",
-        "symfony/yaml": "7.3.*"
+        "symfony/yaml": "7.3.*",
+        "ext-intl": "*"
     },
     "config": {
         "allow-plugins": {

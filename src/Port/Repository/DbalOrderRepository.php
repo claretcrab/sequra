@@ -2,6 +2,7 @@
 
 namespace App\Port\Repository;
 
+use App\Domain\BusinessConstants;
 use App\Domain\DisbursementStatus;
 use App\Domain\Order;
 use App\Domain\OrderRepository;
@@ -36,7 +37,7 @@ class DbalOrderRepository implements OrderRepository
             ->setParameter('id', $order->id())
             ->setParameter('merchant_reference', $order->merchantReference())
             ->setParameter('amount', $order->amount())
-            ->setParameter('created_at', $order->createdAt()->format('Y-m-d'))
+            ->setParameter('created_at', $order->createdAt()->format(BusinessConstants::DATE_FORMAT))
             ->setParameter('disbursement_status', $order->disbursementStatus()->value)
             ->setParameter('disbursement_id', $order->disbursementId())
             ->setParameter('fee', $order->fee());
@@ -77,7 +78,7 @@ class DbalOrderRepository implements OrderRepository
             ->where('disbursement_status = :status')
             ->andWhere('created_at = :created_at')
             ->setParameter('status', DisbursementStatus::PENDING->value)
-            ->setParameter('created_at', $createdAt->format('Y-m-d'));
+            ->setParameter('created_at', $createdAt->format(BusinessConstants::DATE_FORMAT));
 
         return $qb->executeQuery()->fetchFirstColumn();
     }
@@ -93,7 +94,7 @@ class DbalOrderRepository implements OrderRepository
             ->andWhere('created_at <= :created_at')
             ->setParameter('status', DisbursementStatus::PENDING->value)
             ->setParameter('merchant_reference', $merchantReference)
-            ->setParameter('created_at', $createdAt->format('Y-m-d'));
+            ->setParameter('created_at', $createdAt->format(BusinessConstants::DATE_FORMAT));
 
         return $qb->executeQuery()->fetchAssociative();
     }
@@ -113,7 +114,7 @@ class DbalOrderRepository implements OrderRepository
             ->setParameter('status', DisbursementStatus::DISBURSED->value)
             ->setParameter('disbursement_id', $disbursementId->toString())
             ->setParameter('merchant_reference', $merchantReference)
-            ->setParameter('created_at', $createdAt->format('Y-m-d'));
+            ->setParameter('created_at', $createdAt->format(BusinessConstants::DATE_FORMAT));
 
         $qb->executeStatement();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Port\Repository;
 
+use App\Domain\BusinessConstants;
 use App\Domain\DisbursementFrequency;
 use App\Domain\Merchant;
 use App\Domain\MerchantRepository;
@@ -35,7 +36,7 @@ class DbalMerchantRepository implements MerchantRepository
             ->setParameter('id', $merchant->id()->toString())
             ->setParameter('reference', $merchant->reference())
             ->setParameter('email', $merchant->email())
-            ->setParameter('live_on', $merchant->liveOn()->format('Y-m-d'))
+            ->setParameter('live_on', $merchant->liveOn()->format(BusinessConstants::DATE_FORMAT))
             ->setParameter('disbursement_frequency', $merchant->disbursementFrequency()->value)
             ->setParameter('minimum_monthly_fee', $merchant->minimumMonthlyFee());
         $qb->executeStatement();

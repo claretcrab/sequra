@@ -41,6 +41,11 @@ class DisbursementCalculator
             merchantReference: $merchantReference,
             createdAt: $calculationDate,
         );
+        if (!isset($orderAggregate['total_amount'], $orderAggregate['total_fee'])) {
+            $this->logger->warning('No orders found for merchant: '.$merchantReference);
+
+            return;
+        }
 
         $disbursementId = Uuid::v7();
 
@@ -62,6 +67,8 @@ class DisbursementCalculator
                 createdAt: $calculationDate,
                 disbursementId: $disbursementId,
             );
+
+            $this->connection->commit();
         } catch (\Exception $e) {
             if ($this->connection->isTransactionActive()) {
                 $this->connection->rollBack();
