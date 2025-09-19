@@ -8,6 +8,7 @@ use App\Domain\DisbursementRepository;
 use App\Domain\Merchant;
 use App\Domain\MerchantRepository;
 use App\Domain\OrderRepository;
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -17,6 +18,7 @@ class DisbursementCalculatorTest extends TestCase
     private MerchantRepository $merchantRepository;
     private DisbursementRepository $disbursementRepository;
     private LoggerInterface $logger;
+    private Connection $connection;
     private DisbursementCalculator $calculator;
 
     protected function setUp(): void
@@ -25,12 +27,14 @@ class DisbursementCalculatorTest extends TestCase
         $this->merchantRepository = $this->createMock(MerchantRepository::class);
         $this->disbursementRepository = $this->createMock(DisbursementRepository::class);
         $this->logger = $this->createMock(LoggerInterface::class);
+        $this->connection = $this->createMock(Connection::class);
 
         $this->calculator = new DisbursementCalculator(
             $this->orderRepository,
             $this->merchantRepository,
             $this->disbursementRepository,
-            $this->logger
+            $this->logger,
+            $this->connection
         );
     }
 
