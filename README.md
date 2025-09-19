@@ -13,5 +13,7 @@ php bin/phpunit
 
 # Run application commands
 php bin/console app:import-merchants
-php APP_DEBUG=0 bin/console app:import-orders
-php bin/console app:calculate-disbursements 1200 (for first import)
+APP_DEBUG=0 php bin/console app:import-orders
+APP_DEBUG=0 php bin/console app:calculate-disbursements 1200 (for first import)
+php bin/console app:calculate-disbursements 1 (for the daily cron job)
+php bin/console app:generate-report

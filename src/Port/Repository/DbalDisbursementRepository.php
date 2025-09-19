@@ -61,4 +61,14 @@ class DbalDisbursementRepository implements DisbursementRepository
             new \DateTimeImmutable($result['disbursed_at'])
         );
     }
+
+    public function getStatistics(): array
+    {
+        $qb = $this->connection->createQueryBuilder();
+        $qb
+            ->select('COUNT(*) as total_disbursements', 'SUM(amount) as total_amount', 'SUM(fee) as total_fee')
+            ->from('disbursements');
+
+        return $qb->executeQuery()->fetchAssociative() ?: [];
+    }
 }

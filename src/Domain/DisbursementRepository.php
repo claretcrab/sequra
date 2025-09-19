@@ -9,4 +9,6 @@ interface DisbursementRepository
     public function save(Disbursement $disbursement): void;
 
     public function findById(Uuid $id): ?Disbursement;
+
+    public function getStatistics(): array;
 }
