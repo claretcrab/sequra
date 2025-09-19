@@ -3,6 +3,7 @@
 namespace App\Tests\Application;
 
 use App\Application\DisbursementCalculator;
+use App\Application\DTO\DisbursementCalculatorRequest;
 use App\Domain\Disbursement;
 use App\Domain\DisbursementRepository;
 use App\Domain\Merchant;
@@ -49,7 +50,9 @@ class DisbursementCalculatorTest extends TestCase
             ->method('error')
             ->with('Merchant not found: merchant-1');
 
-        $this->calculator->calculate(new \DateTimeImmutable('2024-01-01'), 'merchant-1');
+        $this->calculator->calculate(
+            new DisbursementCalculatorRequest(new \DateTimeImmutable('2024-01-01'), 'merchant-1')
+        );
     }
 
     public function testMerchantNotEligible(): void
@@ -66,7 +69,9 @@ class DisbursementCalculatorTest extends TestCase
             ->method('info')
             ->with('Merchant not eligible: merchant-1');
 
-        $this->calculator->calculate(new \DateTimeImmutable('2024-01-02'), 'merchant-1');
+        $this->calculator->calculate(
+            new DisbursementCalculatorRequest(new \DateTimeImmutable('2024-01-02'), 'merchant-1')
+        );
     }
 
     public function testSuccessfulCalculation(): void
@@ -91,6 +96,8 @@ class DisbursementCalculatorTest extends TestCase
             ->expects($this->once())
             ->method('markOrdersAsDisbursed');
 
-        $this->calculator->calculate(new \DateTimeImmutable('2024-01-01'), 'merchant-1');
+        $this->calculator->calculate(
+            new DisbursementCalculatorRequest(new \DateTimeImmutable('2024-01-01'), 'merchant-1')
+        );
     }
 }

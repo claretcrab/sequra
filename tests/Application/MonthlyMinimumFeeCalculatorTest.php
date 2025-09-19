@@ -2,6 +2,7 @@
 
 namespace App\Tests\Application;
 
+use App\Application\DTO\MonthlyMinimumFeeCalculatorRequest;
 use App\Application\MonthlyMinimumFeeCalculator;
 use App\Domain\Merchant;
 use App\Domain\MerchantRepository;
@@ -41,7 +42,9 @@ class MonthlyMinimumFeeCalculatorTest extends TestCase
             ->method('error')
             ->with('Merchant not found: merchant-1');
 
-        $this->calculator->calculate(new \DateTimeImmutable('2024-01-01'), 'merchant-1', 100);
+        $this->calculator->calculate(
+            new MonthlyMinimumFeeCalculatorRequest(new \DateTimeImmutable('2024-01-01'), 'merchant-1', 100)
+        );
     }
 
     public function testMerchantNotEligible(): void
@@ -58,7 +61,9 @@ class MonthlyMinimumFeeCalculatorTest extends TestCase
             ->method('info')
             ->with('Merchant not eligible: merchant-1');
 
-        $this->calculator->calculate(new \DateTimeImmutable('2024-01-01'), 'merchant-1', 150);
+        $this->calculator->calculate(
+            new MonthlyMinimumFeeCalculatorRequest(new \DateTimeImmutable('2024-01-01'), 'merchant-1', 150)
+        );
     }
 
     public function testSuccessfulCalculation(): void
@@ -80,6 +85,8 @@ class MonthlyMinimumFeeCalculatorTest extends TestCase
                     && '2024-01-01' === $fee->createdAt()->format('Y-m-d');
             }));
 
-        $this->calculator->calculate(new \DateTimeImmutable('2024-01-01'), 'merchant-1', 100);
+        $this->calculator->calculate(
+            new MonthlyMinimumFeeCalculatorRequest(new \DateTimeImmutable('2024-01-01'), 'merchant-1', 100)
+        );
     }
 }

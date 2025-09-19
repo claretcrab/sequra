@@ -2,6 +2,7 @@
 
 namespace App\Port\Cli;
 
+use App\Application\DTO\MonthlyMinimumFeeCalculatorRequest;
 use App\Application\MonthlyMinimumFeeCalculator;
 use App\Domain\BusinessConstants;
 use App\Domain\DisbursementRepository;
@@ -31,7 +32,9 @@ class CalculateMonthlyMinimumFeesCommand extends Command
             $disbursements = $this->disbursementRepository->getMonthlyStatistics($calculationDate);
 
             foreach ($disbursements as $disbursement) {
-                $this->monthlyMinimumFeeCalculator->calculate($calculationDate, $disbursement['merchant_reference'], $disbursement['total_fee']);
+                $this->monthlyMinimumFeeCalculator->calculate(
+                    new MonthlyMinimumFeeCalculatorRequest($calculationDate, $disbursement['merchant_reference'], $disbursement['total_fee'])
+                );
             }
 
             $calculationDate = $calculationDate->modify('+1 month');

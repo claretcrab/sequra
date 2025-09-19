@@ -3,6 +3,7 @@
 namespace App\Port\Cli;
 
 use App\Application\DisbursementCalculator;
+use App\Application\DTO\DisbursementCalculatorRequest;
 use App\Domain\BusinessConstants;
 use App\Domain\OrderRepository;
 use Symfony\Component\Console\Attribute\Argument;
@@ -31,7 +32,9 @@ class CalculateDisbursementsCommand extends Command
             $merchantReferences = $this->orderRepository->findMerchantsWithoutDisbursement($calculationDate);
 
             foreach ($merchantReferences as $merchantReference) {
-                $this->disbursementCalculator->calculate($calculationDate, $merchantReference);
+                $this->disbursementCalculator->calculate(
+                    new DisbursementCalculatorRequest($calculationDate, $merchantReference)
+                );
             }
 
             $calculationDate = $calculationDate->modify('+1 day');

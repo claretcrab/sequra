@@ -2,6 +2,7 @@
 
 namespace App\Application;
 
+use App\Application\DTO\MonthlyMinimumFeeCalculatorRequest;
 use App\Domain\Exception\MonthlyMinimumFeeExistsException;
 use App\Domain\MerchantRepository;
 use App\Domain\MonthlyMinimumFee;
@@ -18,32 +19,32 @@ class MonthlyMinimumFeeCalculator
     ) {
     }
 
-    public function calculate(\DateTimeImmutable $calculationDate, string $merchantReference, int $fee): void
+    public function calculate(MonthlyMinimumFeeCalculatorRequest $request): void
     {
-        $merchant = $this->merchantRepository->findByReference($merchantReference);
+        $merchant = $this->merchantRepository->findByReference($request->merchantReference);
 
         if (null === $merchant) {
-            $this->logger->error('Merchant not found: '.$merchantReference);
+            $this->logger->error('Merchant not found: '.$request->merchantReference);
 
             return;
         }
 
-        if ($merchant->isNotEligibleForMonthlyMinimumFee($fee)) {
-            $this->logger->info('Merchant not eligible: '.$merchantReference);
+        if ($merchant->isNotEligibleForMonthlyMinimumFee($request->fee)) {
+            $this->logger->info('Merchant not eligible: '.$request->merchantReference);
 
             return;
         }
 
         $monthlyMinimumFee = new MonthlyMinimumFee(
             id: Uuid::v7(),
-            merchantReference: $merchantReference,
-            fee: $merchant->minimumMonthlyFee() - $fee,
-            createdAt: $calculationDate,
+            merchantReference: $request->merchantReference,
+            fee: $merchant->minimumMonthlyFee() - $request->fee,
+            createdAt: $request->calculationDate,
         );
         try {
             $this->monthlyMinimumFeeRepository->save($monthlyMinimumFee);
         } catch (MonthlyMinimumFeeExistsException $e) {
-            $this->logger->warning('Monthly minimum fee already exists for merchant: '.$merchantReference);
+            $this->logger->warning('Monthly minimum fee already exists for merchant: '.$request->merchantReference);
         }
     }
 }
