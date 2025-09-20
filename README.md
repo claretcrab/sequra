@@ -69,6 +69,7 @@ Goal https://sequra.github.io/backend-challenge/
 - Add indexes to the database tables
 - CQRS with symfony messenger
   - Async calculations with retries
+- Implement different disbursement strategies per merchant
 - CI/CD with GitHub Actions
 - ...
 
