@@ -22,8 +22,8 @@ final class Version20250918155621 extends AbstractMigration
         $sql = <<<'SQL'
 CREATE TABLE disbursements (
     id CHAR(36) NOT NULL PRIMARY KEY, -- UUID stored as a string
-    amount INT NOT NULL,
-    fee INT NOT NULL,
+    amount BIGINT NOT NULL,
+    fee BIGINT NOT NULL,
     merchant_reference VARCHAR(255) NOT NULL,
     disbursed_at DATE NOT NULL
 );

@@ -42,7 +42,7 @@ class ImportOrdersCommand extends Command
                 $order = new Order(
                     id: $data[0],
                     merchantReference: $data[1],
-                    amount: (int) $data[2] * 100, // Convert to cents,
+                    amount: (int) ($data[2] * 100), // Convert to cents,
                     createdAt: new \DateTimeImmutable($data[3]),
                 );
 

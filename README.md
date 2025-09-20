@@ -32,14 +32,14 @@ php bin/console app:generate-reports
 +------+-------------------------+-------------------------------+----------------------+
 | Year | Number of disbursements | Amount disbursed to merchants | Amount of order fees |
 +------+-------------------------+-------------------------------+----------------------+
-| 2022 | 1547                    | 37.751.723,00 €               | 338.118,88 €         |
-| 2023 | 10363                   | 189.137.034,00 €              | 1.699.264,40 €       |
+| 2022 | 1547                    | 37.852.591,37 €               | 338.975,49 €         |
+| 2023 | 10363                   | 189.683.585,81 €              | 1.703.962,01 €       |
 +------+-------------------------+-------------------------------+----------------------+
 +------+--------------------------------+--------------------------------+
 | Year | Number of monthly fees charged | Amount of monthly fees charged |
 +------+--------------------------------+--------------------------------+
-| 2022 | 14                             | 375,26 €                       |
-| 2023 | 148                            | 3.506,51 €                     |
+| 2022 | 14                             | 374,49 €                       |
+| 2023 | 148                            | 3.498,29 €                     |
 +------+--------------------------------+--------------------------------+
 
 ```
@@ -64,7 +64,7 @@ Goal https://sequra.github.io/backend-challenge/
 - Add more unit and integration tests
   - Create fixtures for tests
 - Add more value objects
-- Add validations (e.g. email format)
+- Add validations (email, amount, ...)
 - Add more error handling and Domain exceptions
 - Add indexes to the database tables
 - CQRS with symfony messenger

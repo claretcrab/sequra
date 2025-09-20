@@ -47,7 +47,7 @@ class ImportMerchantsCommand extends Command
                     email: $data[2],
                     liveOn: new \DateTimeImmutable($data[3]),
                     disbursementFrequency: DisbursementFrequency::from($data[4]),
-                    minimumMonthlyFee: (int) $data[5] * 100, // Convert to cents
+                    minimumMonthlyFee: (int) ($data[5] * 100), // Convert to cents
                 );
 
                 $this->merchantRepository->save($merchant);
