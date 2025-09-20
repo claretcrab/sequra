@@ -76,7 +76,7 @@ class DbalOrderRepository implements OrderRepository
             ->select('DISTINCT merchant_reference')
             ->from('orders')
             ->where('disbursement_status = :status')
-            ->andWhere('created_at = :created_at')
+            ->andWhere('created_at <= :created_at')
             ->setParameter('status', DisbursementStatus::PENDING->value)
             ->setParameter('created_at', $createdAt->format(BusinessConstants::DATE_FORMAT));
 
